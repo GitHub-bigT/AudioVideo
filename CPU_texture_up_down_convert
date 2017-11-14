@@ -1,0 +1,34 @@
+//bgr 2 rgba
+int sz = pGraph->i_width * pGraph->i_height * 4;
+					uint8_t rgba[4];
+					uint8_t *pSrc = pBuffer;
+					uint8_t *pDst = pbo->pbo[0]->pbo_addr;
+					for (int i = 0; i < pGraph->i_width * pGraph->i_height; i++)
+					{
+						rgba[2] = *pSrc++;
+						rgba[1] = *pSrc++;
+						rgba[0] = *pSrc++;
+						rgba[3] = 0xFF;
+						memcpy(pDst, rgba, 4);
+						pDst += 4;
+					}
+					unsigned char* rgbaData = new unsigned char[sz];
+					memcpy(rgbaData, pbo->pbo[0]->pbo_addr, sz);
+					//up down convert
+					int widthDataSize = pGraph->i_width * 4;
+					//up down convert
+					for (int i = 0; i < pGraph->i_height / 2; i++)
+					{
+						unsigned char* tempData = new unsigned char[widthDataSize];
+						memcpy(tempData, &rgbaData[i * widthDataSize], widthDataSize);
+						//1
+						memcpy(&rgbaData[i * widthDataSize], &rgbaData[(pGraph->i_height - i - 1) * widthDataSize], widthDataSize);
+						//height
+						memcpy(&rgbaData[(pGraph->i_height - i - 1) * widthDataSize], tempData, widthDataSize);
+						delete[] tempData;
+						tempData = nullptr;
+					}
+					memcpy(pbo->pbo[0]->pbo_addr, rgbaData, sz);
+					
+					delete[] rgbaData;
+					rgbaData = nullptr;
