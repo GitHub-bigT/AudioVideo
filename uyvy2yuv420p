@@ -1,0 +1,35 @@
+//uyvy to yuv420p
+		unsigned char* yData = new unsigned char[video_frame.xres * video_frame.yres];
+		unsigned char* yDataTemp = yData;
+		unsigned char* uData = new unsigned char[video_frame.xres * video_frame.yres / 4];
+		unsigned char* uDataTemp = uData;
+		unsigned char* vData = new unsigned char[video_frame.xres * video_frame.yres / 4];
+		unsigned char* vDataTemp = vData;
+		for (int i = 0 ; i < video_frame.xres * video_frame.yres * 2 ; i+=2)
+		{
+			*yDataTemp = (unsigned char)video_frame.p_data[i + 1];
+			yDataTemp++;
+		}
+		for (int i = 0; i < video_frame.yres; i+=2)
+		{
+			for (int j = 0 ; j < video_frame.xres * 2 ; j+=4)
+			{
+				*uDataTemp = video_frame.p_data[j + video_frame.xres * 2 * i];
+				*vDataTemp = video_frame.p_data[j + 2 + video_frame.xres * 2 * i];
+				uDataTemp++;
+				vDataTemp++;
+			}
+		}
+
+		self->para_ndi->buffer_mutex->lock();
+		memcpy(self->para_ndi->buffer, yData, video_frame.xres * video_frame.yres);
+		memcpy(&self->para_ndi->buffer[video_frame.xres * video_frame.yres], uData, video_frame.xres * video_frame.yres / 4);
+		memcpy(&self->para_ndi->buffer[video_frame.xres * video_frame.yres + video_frame.xres * video_frame.yres / 4], vData, video_frame.xres * video_frame.yres / 4);
+		self->para_ndi->buffer_mutex->unlock();
+		
+		delete[] yData;  
+		yData = nullptr;
+		delete[] uData;;
+		uData = nullptr;
+		delete[] vData;
+		vData = nullptr;
