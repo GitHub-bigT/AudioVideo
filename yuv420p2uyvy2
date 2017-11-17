@@ -1,4 +1,4 @@
-		if (!self->is_yuv420p_buffer_init)
+if (!self->is_yuv420p_buffer_init)
 		{
 			self->yuv420p_buffer = new unsigned char[width * height * 1.5];
 			self->is_yuv420p_buffer_init = true;
@@ -10,19 +10,19 @@
 		//yuv420p to uyvy
 		image_size = width * height * 2;
 		*pp_image_source = new unsigned char[image_size];
-		//unsigned char* image_source_temp = *pp_image_source;
+
+		unsigned char* image_source_temp = *pp_image_source;
+
+		MLT_TIMER start;
+		timer_start(&start);
+		int u_temp = 0;
+		int y_temp = 0;
 
 		/*for (int i = 0; i < width * height ; i++)
 		{
 			int y_index = 2 * i + 1;
 			image_source_temp[y_index] = self->yuv420p_buffer[i];//y
 		}*/
-
-		
-		MLT_TIMER start;
-		timer_start(&start);
-		int u_temp = 0;
-		int y_temp = 0;
 
 		for (int i = 0; i < height; i++)
 		{
@@ -47,7 +47,7 @@
 		}
 
 		int64_t test_time = timer_elapsed_msec(&start);
-		FILE *fp = fopen("d:/VLC/aatime7_all_convert_time.txt", "a");
+		FILE *fp = fopen("d:/VLC/aatime7_yuv_convert_time.txt", "a");
 		fprintf(fp, "convert time:%d ms\n", test_time);
 		//fwrite(image_source, 1, device_pbo->width * device_pbo->height * 2, fp);
 		fclose(fp);
