@@ -1,0 +1,55 @@
+unsigned char* image_source_yuv420p_y = new unsigned char[width * height];
+		memcpy(image_source_yuv420p_y, p_device_pbo->pbo[0]->pbo_addr, width * height);
+		unsigned char* image_source_yuv420p_u = new unsigned char[width * height / 4];
+		memcpy(image_source_yuv420p_u, p_device_pbo->pbo[1]->pbo_addr, width * height / 4);
+		unsigned char* image_source_yuv420p_v = new unsigned char[width * height / 4];
+		memcpy(image_source_yuv420p_v, p_device_pbo->pbo[2]->pbo_addr, width * height / 4);
+
+		//yuv420p to uyvy
+		image_size = width * height * 2;
+		*pp_image_source = new unsigned char[image_size];
+		unsigned char* image_source_temp = *pp_image_source;
+		for (int i = 0; i < width * height ; i++)
+		{
+			int y_index = 2 * i + 1;
+			image_source_temp[y_index] = image_source_yuv420p_y[i];//y
+		}
+		int num_per_row = width * 2 / 4;//per row have ... u
+		int num_row = 0;//row
+		int index_temp = 0;
+		for (int i = 0; i < width * height / 4; i++)
+		{
+			index_temp++;
+			//printf("%d\n",i % (width / 2) == 0);
+			if (i % (width / 2) == 0)
+			{
+				num_row = i / num_per_row;
+				index_temp = 0;
+				//printf("i = %d , heigth:::%d\n", i , i / (width / 2));
+			}
+			//360 row , pre write two
+			(*pp_image_source)[index_temp * 4 + num_row * 2 * (width * 2)] = image_source_yuv420p_u[i];//u
+			(*pp_image_source)[index_temp * 4 + (num_row * 2 + 1) * (width * 2)] = image_source_yuv420p_u[i];
+		}
+		num_row = 0;
+		index_temp = 0;
+		for (int i = 0; i < width * height / 4; i++)
+		{
+			index_temp++;
+			//printf("%d\n",i % (width / 2) == 0);
+			if (i % (width / 2) == 0)
+			{
+				num_row = i / num_per_row;
+				index_temp = 0;
+			}
+			//360 row , pre write two
+			(*pp_image_source)[index_temp * 4 + 2 + num_row * 2 * (width * 2)] = image_source_yuv420p_v[i];//u
+			(*pp_image_source)[index_temp * 4 + 2 + (num_row * 2 + 1) * (width * 2)] = image_source_yuv420p_v[i];
+		}
+		delete[] image_source_yuv420p_y;
+		image_source_yuv420p_y = nullptr;
+		delete[] image_source_yuv420p_u;
+		image_source_yuv420p_u = nullptr;
+		delete[] image_source_yuv420p_v;
+		image_source_yuv420p_v = nullptr;
+		break;
