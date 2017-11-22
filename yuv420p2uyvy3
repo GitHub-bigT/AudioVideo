@@ -22,12 +22,10 @@ if (!self->is_yuv420p_buffer_init)
 		{
 			for (int j = 0; j < width * 2; j += 4)
 			{
-				//uint32_t a_pixel_odd = ((uint32_t)*p_u) | ((uint32_t)*p_y1) >> 8 | ((uint32_t)*p_v) >> 16 | ((uint32_t)*p_y2) >> 24;
-				uint32_t a_pixel_odd = (uint32_t)*p_u << 32 | (uint32_t)*p_y1 << 24 | (uint32_t)*p_v << 16 | (uint32_t)*p_y2 << 8;
+				uint32_t a_pixel_odd = (uint32_t)*p_u | (uint32_t)*p_y1 << 8 | (uint32_t)*p_v << 16 | (uint32_t)*p_y2 << 24;
 				int odd_index = i * width * 2 + j;
 				image_source_temp[odd_index / 4] = a_pixel_odd;
-				//uint32_t a_pixel_even = ((uint32_t)*p_u) | ((uint32_t)*p_y3) >> 8 | ((uint32_t)*p_v) >> 16 | ((uint32_t)*p_y4) >> 24;
-				uint32_t a_pixel_even = (uint32_t)*p_u << 32 | (uint32_t)*p_y3 << 24 | (uint32_t)*p_v << 16 | (uint32_t)*p_y4 << 8;
+				uint32_t a_pixel_even = (uint32_t)*p_u | (uint32_t)*p_y3 << 8 | (uint32_t)*p_v << 16 | (uint32_t)*p_y4 << 24;
 				int even_index = (i + 1) * width * 2 + j;
 				image_source_temp[even_index / 4] = a_pixel_even;
 				p_u++;
