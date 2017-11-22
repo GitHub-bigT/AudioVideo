@@ -1,0 +1,33 @@
+static void yuv420p2uyvy(uint8_t** des, uint8_t* src, int width, int height)
+{
+	uint32_t* image_source_temp = (uint32_t*)*des;
+	uint8_t* p_y1 = src;
+	uint8_t* p_y2 = src + 1;
+	uint8_t* p_y3 = src + width;
+	uint8_t* p_y4 = src + width + 1;
+	uint8_t* p_u = src + width * height;
+	uint8_t* p_v = src + width * height + width * height / 4;
+
+	for (int i = 0; i < height; i += 2)
+	{
+		for (int j = 0; j < width * 2; j += 4)
+		{
+			uint32_t a_pixel_odd = (uint32_t)*p_u | (uint32_t)*p_y1 << 8 | (uint32_t)*p_v << 16 | (uint32_t)*p_y2 << 24;
+			int odd_index = i * width * 2 + j;
+			image_source_temp[odd_index / 4] = a_pixel_odd;
+			uint32_t a_pixel_even = (uint32_t)*p_u | (uint32_t)*p_y3 << 8 | (uint32_t)*p_v << 16 | (uint32_t)*p_y4 << 24;
+			int even_index = (i + 1) * width * 2 + j;
+			image_source_temp[even_index / 4] = a_pixel_even;
+			p_u++;
+			p_v++;
+			p_y1 += 2;
+			p_y2 += 2;
+			p_y3 += 2;
+			p_y4 += 2;
+		}
+		p_y1 += width;
+		p_y2 += width;
+		p_y3 += width;
+		p_y4 += width;
+	}
+}
