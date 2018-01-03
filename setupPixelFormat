@@ -1,0 +1,18 @@
+int setupPixelFormat(HDC hDC)
+{
+	int pixelIdx;
+	// get the appropriate pixel format 
+	pixelIdx = ChoosePixelFormat(hDC, &pfd);
+	if (pixelIdx == 0) {
+		printf("ChoosePixelFormat() failed:  Cannot find format specified.");
+		return 0;
+	}
+
+	/* set the pixel format */
+	if (SetPixelFormat(hDC, pixelIdx, &pfd) == FALSE) {
+		printf("SetPixelFormat() failed:  Cannot set format specified.");
+		return 0;
+	}
+
+	return pixelIdx;
+}
