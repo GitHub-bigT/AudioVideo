@@ -1,0 +1,136 @@
+1------------------
+LPCWSTR stringToLPCWSTR(std::string orig)
+{
+	size_t origsize = orig.length() + 1;
+	const size_t newsize = 100;
+	size_t convertedChars = 0;
+	wchar_t *wcstring = (wchar_t *)malloc(sizeof(wchar_t) *(orig.length() - 1));
+	mbstowcs_s(&convertedChars, wcstring, origsize, orig.c_str(), _TRUNCATE);
+
+	return wcstring;
+}
+
+LONG WINAPI winProc(HWND hWin, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	LONG ret = 1;
+	//find the index of this window in our list.
+	//If this is a callback from a dummy window that was used to query extension, index will be -1
+	switch (uMsg) {
+	default:
+		// pass all unhandled messages to DefWindowProc
+		ret = DefWindowProc(hWin, uMsg, wParam, lParam);
+		break;
+	}
+	// return 1 if handled message, 0 if not
+	return ret;
+}
+
+HWND WINAPI createWindow(const char* title, int posx, int posy, int width, int height, int nCmdShow)
+{
+	WNDCLASS    wc;
+	HWND        hWin;
+	//static char szAppClassName[] = "Hirender";
+	std::string tempString("Hirender");
+	static GLboolean classRegistered = 0;
+	DWORD   dwExStyle;
+	DWORD   dwStyle = WS_OVERLAPPEDWINDOW;
+
+	/* get this modules instance */
+	HINSTANCE hInstance = GetModuleHandle(NULL);
+
+	// register the frame class
+	if (classRegistered == 0) {
+		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+		wc.lpfnWndProc = (WNDPROC)winProc;
+		wc.cbClsExtra = 0;
+		wc.cbWndExtra = 0;
+		wc.hInstance = hInstance;
+		wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wc.hbrBackground = NULL;
+		wc.lpszMenuName = NULL;
+		wc.lpszClassName = stringToLPCWSTR(tempString);
+
+		if (!RegisterClass(&wc)) return FALSE;
+		classRegistered = 1;
+	}
+
+	// Create the frame
+	hWin = CreateWindow(stringToLPCWSTR(tempString),
+		stringToLPCWSTR(tempString),
+		WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+		posx, posy,
+		width,
+		height,
+		NULL,
+		NULL,
+		hInstance,
+		NULL);
+
+	// make sure window was created
+	if (!hWin) {
+		printf("ERROR: CreateWindowEx failed\n");
+		return FALSE;
+	}
+
+	return hWin;
+}
+
+textureHWND = createWindow("dummy", 0, 0, 1280, 720, 0);
+
+2-------------------------
+HWND WINAPI createWindow(const char* title, int posx, int posy, int width, int height, int nCmdShow)
+{
+	WNDCLASS    wc;
+	HWND        hWin;
+	static char szAppClassName[] = "OpenGL";
+	CString str = CString(szAppClassName);
+	USES_CONVERSION;
+	LPCWSTR wszClassName = new WCHAR[str.GetLength() + 1];
+	wcscpy((LPTSTR)wszClassName, T2W((LPTSTR)str.GetBuffer(NULL)));
+	str.ReleaseBuffer();
+
+	static GLboolean classRegistered = 0;
+	DWORD   dwExStyle;
+	DWORD   dwStyle = WS_OVERLAPPEDWINDOW;
+
+	/* get this modules instance */
+	HINSTANCE hInstance = GetModuleHandle(NULL);
+
+	// register the frame class
+	if (classRegistered == 0) {
+		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+		wc.lpfnWndProc = (WNDPROC)winProc;
+		wc.cbClsExtra = 0;
+		wc.cbWndExtra = 0;
+		wc.hInstance = hInstance;
+		wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wc.hbrBackground = NULL;
+		wc.lpszMenuName = NULL;
+		wc.lpszClassName = wszClassName;
+
+		if (!RegisterClass(&wc)) return FALSE;
+		classRegistered = 1;
+	}
+
+	// Create the frame
+	hWin = CreateWindow(wszClassName,
+		wszClassName,
+		WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+		posx, posy,
+		width,
+		height,
+		NULL,
+		NULL,
+		hInstance,
+		NULL);
+
+	// make sure window was created
+	if (!hWin) {
+		printf("ERROR: CreateWindowEx failed\n");
+		return FALSE;
+	}
+
+	return hWin;
+}
