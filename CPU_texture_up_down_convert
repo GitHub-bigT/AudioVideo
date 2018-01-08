@@ -1,5 +1,5 @@
-//bgr 2 rgba
-int sz = pGraph->i_width * pGraph->i_height * 4;
+					//bgr 2 rgba
+					int sz = pGraph->i_width * pGraph->i_height * 4;
 					uint8_t rgba[4];
 					uint8_t *pSrc = pBuffer;
 					uint8_t *pDst = pbo->pbo[0]->pbo_addr;
