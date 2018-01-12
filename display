@@ -1,0 +1,19 @@
+//
+	DISPLAY_DEVICE dispDevice;
+	DWORD   index = 0;
+	memset((void *)&dispDevice, 0, sizeof(DISPLAY_DEVICE));
+	dispDevice.cb = sizeof(DISPLAY_DEVICE);
+	while (EnumDisplayDevices(NULL, index, &dispDevice, 0) != 0) 
+	{
+		//char    deviceName[32];
+		//memcpy(deviceName, dispDevice.DeviceName, strlen(WcharToChar(dispDevice.DeviceName).c_str()) + 1);
+
+		DEVMODE devMode;
+		memset((void*)&devMode, 0, sizeof(DEVMODE));
+		EnumDisplaySettings(dispDevice.DeviceName, ENUM_CURRENT_SETTINGS, &devMode);
+
+		printf("display name=%s, dmDisplayFrequency=%d\n", std::string(WcharToChar(dispDevice.DeviceName)).c_str(), devMode.dmDisplayFrequency);
+		printf("  DeviceID      = %s\n", dispDevice.DeviceID);
+
+		index++;
+	}
