@@ -1,0 +1,29 @@
+	HWND dummyHWND = NULL;
+	HDC dummyDC = NULL;
+	HGLRC dummyRC = NULL;
+
+	dummyHWND = createWindow("dummy", 0, 0, 1280, 720, 0);
+	dummyDC = GetDC(dummyHWND);
+	setupPixelFormat(dummyDC);
+	dummyRC = wglCreateContext(dummyDC);
+	wglMakeCurrent(dummyDC, dummyRC);
+
+	initGLEW();
+
+	wglMakeCurrent(NULL, NULL);
+	//clean dummyWindow
+	if (dummyRC)
+	{
+		wglDeleteContext(dummyRC);
+		dummyRC = NULL;
+	}
+	if (dummyDC)
+	{
+		ReleaseDC(dummyHWND, dummyDC);
+		dummyDC = NULL;
+	}
+	if (dummyHWND)
+	{
+		DestroyWindow(dummyHWND);
+		dummyHWND = NULL;
+	}
