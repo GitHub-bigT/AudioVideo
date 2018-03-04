@@ -1,0 +1,24 @@
+void dump_texture(GLuint texture_id, int *pWidth, int *pHeight)
+{
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, pWidth);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, pHeight);
+
+    uint8_t *pix = (uint8_t*)malloc(*pWidth * *pHeight * 4);
+    char buff[128];
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pix);
+
+	if (pix[0] == 0)
+	{
+		printf("aaaa\n");
+	}
+	
+	sprintf(buff, "dump_%dx%d.rgba", *pWidth, *pHeight);
+    FILE *fp = fopen(buff, "wb");
+    fwrite(pix, 1, *pWidth * *pHeight * 4, fp);
+    fclose(fp);
+    free(pix);
+    
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+}
